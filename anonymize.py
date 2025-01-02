@@ -6,7 +6,6 @@ import zipfile
 import logging
 
 anonymizer = "/root/DICOMAnonymizer/anonymize"
-option = "-b -p hashuid"
 
 # Configure logger
 logging.basicConfig(level=logging.INFO)
@@ -32,12 +31,18 @@ def handle_file(file):
     # Run the anonymizer executable
     gr.Info(f"Anonymizing : {os.path.basename(file.name)}")
     subprocess.run(
-        [anonymizer, "-i", unzipped_dir, "-o", anonymized_dir, option]
+        [
+            anonymizer,
+            "-i", unzipped_dir,
+            "-o", anonymized_dir,
+            "-b",
+            "-p", "hashuid"
+        ]
     )
     logger.info(f"Anonymized file created at: {anonymized_dir}")
 
     # Zip the anonymized file
-    gr.Info(f"Zipping result: {os.path.basename(anonymized_filename)}")
+    gr.Info(f"Zipping : {os.path.basename(anonymized_filename)}")
     shutil.make_archive(anonymized_dir, "zip", anonymized_dir)
     logger.info(f"Anonymized file zipped at: {anonymized_filename}")
 
@@ -49,7 +54,8 @@ def handle_file(file):
     return anonymized_dir + ".zip"
 
 
-with gr.Blocks() as demo:
+with gr.Blocks(title="Anonymize DICOM File",
+               delete_cache=(86400, 86400)) as demo:
     gr.Markdown("# Anonymize zipped DICOM File")
     file_input = gr.File(
         label="Upload your zipped DICOM file", file_types=[".zip"],
@@ -61,4 +67,4 @@ with gr.Blocks() as demo:
     )
     file_input.change(handle_file, inputs=file_input, outputs=file_output)
 
-demo.launch(server_name="0.0.0.0")
+demo.launch()
