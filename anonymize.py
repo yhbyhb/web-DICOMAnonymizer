@@ -54,15 +54,15 @@ def handle_file(file):
     return anonymized_dir + ".zip"
 
 
-with gr.Blocks(title="Anonymize DICOM File",
+with gr.Blocks(title="Anonymize DICOM zip file",
                delete_cache=(86400, 86400)) as demo:
-    gr.Markdown("# Anonymize zipped DICOM File")
+    gr.Markdown("# Anonymize a DICOM zip file")
     file_input = gr.File(
-        label="Upload your zipped DICOM file", file_types=[".zip"],
+        label="Upload your DICOM zip file", file_types=[".zip"],
         interactive=True
     )
     file_output = gr.File(
-        label="Download anonymized zipped DICOM file",
+        label="Download anonymized DICOM zip file",
         interactive=False
     )
     file_input.change(handle_file, inputs=file_input, outputs=file_output)
