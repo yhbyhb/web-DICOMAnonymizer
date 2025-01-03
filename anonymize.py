@@ -1,19 +1,30 @@
-import gradio as gr
-import shutil
+import argparse
+import logging
 import os
+import shutil
 import subprocess
 import zipfile
-import logging
 
-anonymizer = "/root/DICOMAnonymizer/anonymize"
+import gradio as gr
+
 
 # Configure logger
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+parser = argparse.ArgumentParser(description="Anonymize DICOM zip file")
+parser.add_argument(
+    "--anonymizer",
+    type=str,
+    default="/root/DICOMAnonymizer/anonymize",
+    help="Path to the anonymizer executable"
+)
+args = parser.parse_args()
+
 
 def handle_file(file):
     if not file:
+        logger.warning("No file uploaded")
         return
 
     logger.info(f"File received: {file.name}")
@@ -32,7 +43,7 @@ def handle_file(file):
     gr.Info(f"Anonymizing : {os.path.basename(file.name)}")
     subprocess.run(
         [
-            anonymizer,
+            args.anonymizer,
             "-i", unzipped_dir,
             "-o", anonymized_dir,
             "-b",
@@ -54,6 +65,7 @@ def handle_file(file):
     return anonymized_dir + ".zip"
 
 
+# Launch the Gradio interface
 with gr.Blocks(title="Anonymize DICOM zip file",
                delete_cache=(86400, 86400)) as demo:
     gr.Markdown("# Anonymize a DICOM zip file")
