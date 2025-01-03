@@ -5,7 +5,8 @@ RUN apt-get update -qq && apt-get install -yq build-essential \
 
 RUN apt update && apt install -yq python3 python3-pip 
 
-RUN pip install --no-cache-dir gradio
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
 # build gdcm and the executable
 # test with 3.0.20 instead of 3.0.5
